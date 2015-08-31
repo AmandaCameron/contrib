@@ -27,7 +27,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -67,27 +66,6 @@ func main() {
 	args := []string{"."}
 	if flag.NArg() > 0 {
 		args = flag.Args()
-	}
-
-	// check for go
-	goBin, err := exec.LookPath("go")
-	if err != nil {
-		log.Fatalf("`go` executable not found: %v, see %q ", err, "golang.org/doc/install")
-	}
-	toolPath := filepath.Dir(goBin)
-	// check for linux_amd64 toolchain
-	crossPath := filepath.Join(toolPath, "linux_amd64")
-	if _, crossErr := os.Stat(crossPath); os.IsNotExist(crossErr) {
-		// check for make.bash
-		makeBash, err := filepath.Abs(filepath.Join(toolPath, "..", "src", "make.bash"))
-		if err != nil {
-			log.Fatalf("failed to resolve make.bash path: %v", err)
-		}
-		if _, err := os.Stat(makeBash); os.IsNotExist(err) {
-			log.Fatalf("`make.bash` not found %q: %v", makeBash, err)
-		}
-		makeBashCmd := fmt.Sprintf("(cd %s; GOOS=linux GOARCH=amd64 ./make.bash --no-clean)", filepath.Dir(makeBash))
-		log.Fatalf("`go %s` toolchain not found: %v, run: %q", "linux_amd64", crossErr, makeBashCmd)
 	}
 
 	fpath, err := filepath.Abs(args[0])
